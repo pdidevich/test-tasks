@@ -1,0 +1,31 @@
+<template>
+  <div class="loader" v-if="show"></div>
+</template>
+
+<script>
+    export default{
+        props: {
+            show: Boolean,
+        }
+    }
+</script>
+
+<style>
+.loader {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    border: 3px dashed teal;
+    animation: rotate 5s infinite linear;
+    margin: auto;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg) scale(1);
+    }
+    to {
+        transform: rotate(360deg) scale(1);
+    }
+}
+</style>
