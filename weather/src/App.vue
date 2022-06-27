@@ -2,7 +2,7 @@
 1. Add countries
 2. Add error component
 3. Check the population of cities to show small amount of cities buttons
-4. 
+4. Divide into more components
  -->
 <template>
   <Popup v-model:show="isPopupVisible">
