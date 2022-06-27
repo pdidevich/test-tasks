@@ -59,23 +59,18 @@
             city = await this.getPlaceByIp()
           }
 
-          if (city.name) {
-              localStorage.setItem('city', city.name)
-          }
+          Object.keys(city).forEach(key => {
+            if (city[key]) {
+              localStorage.setItem(key, city[key])
+            }
+          })
 
-          if (city.country) {
-              localStorage.setItem('country', city.country)
-          }
-
-          if (city.countryCode) {
-              localStorage.setItem('countryCode', city.countryCode)
-          }
           this.city = city
       },
       async getPlaceByIp() {
           try {
               const response = await axios.get('http://ip-api.com/json/')
-              return {name: response.data?.city, country: response.data?.country, countryCode: this.response.data?.countryCode}
+              return {name: response.data?.city, country: response.data?.country, countryCode: response.data?.countryCode}
             } catch (e) {
               //TODO error component
               console.error(e)
