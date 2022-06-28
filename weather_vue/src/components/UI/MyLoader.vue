@@ -1,13 +1,13 @@
 <template>
-  <div class="loader" v-if="show"></div>
+    <div class="loader" v-if="show"></div>
 </template>
 
 <script>
-    export default{
-        props: {
-            show: Boolean,
-        }
+export default {
+    props: {
+        show: Boolean,
     }
+}
 </script>
 
 <style>
@@ -24,6 +24,7 @@
     from {
         transform: rotate(0deg) scale(1);
     }
+
     to {
         transform: rotate(360deg) scale(1);
     }

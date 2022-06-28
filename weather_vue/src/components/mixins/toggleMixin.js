@@ -1,7 +1,6 @@
 export default {
     props: {
         show: Boolean,
-        default: false,
     },
     methods: {
         hideDialog() {
