@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
+import ErrorNotice from './components/UI/ErrorNotice/ErrorNotice';
 
 function App() {
+  const HIDE_ERR_TIME = 5000
   const [tempMin, setTempMin] = useState('')
   const [tempMax, setTempMax] = useState('уточняется')
   const [isPopupVisible, setIsPopupVisible] = useState(false)
@@ -12,6 +14,16 @@ function App() {
     countryCode: 'RU',
   })
   const [isCitiesLoading, setIsCitiesLoading] = useState(true)
+  const [isError, setIsError] = useState(false)
+  const [errorTimeout, setErrorTimeout] = useState()
+
+  const saveCityToStorage = function () {
+    Object.keys(city).forEach(key => {
+      if (city[key]) {
+        localStorage.setItem(key, city[key])
+      }
+    })
+  }
 
   const setStartedPlace = async function () {
     let startedCity = {
@@ -22,24 +34,18 @@ function App() {
     if (!startedCity.name || !startedCity.country || !startedCity.countryCode) {
       startedCity = await getPlaceByIp()
     }
-
-    Object.keys(startedCity).forEach(key => {
-      if (startedCity[key]) {
-        localStorage.setItem(key, startedCity[key])
-      }
-    })
-
     setCity(startedCity)
   }
+
   const getPlaceByIp = async function () {
     try {
       const response = await axios.get('http://ip-api.com/json/')
       return { name: response.data?.city, country: response.data?.country, countryCode: response.data?.countryCode }
     } catch (e) {
-      //TODO error component
-      console.error(e)
+      showError()
     }
   }
+
   const getWeather = async function () {
     try {
       const response = await axios.get("https://api.openweathermap.org/data/2.5/weather", {
@@ -53,10 +59,21 @@ function App() {
       setTempMax(response.data?.main?.temp_max);
       setTempMin(response.data?.main?.temp_min);
     } catch (error) {
-      //TODO error component
-      console.error(error)
+      showError()
     }
   }
+  
+  const showError = function () {
+    if (errorTimeout) {
+      window.clearTimeout(errorTimeout)
+    }
+    setErrorTimeout(window.setTimeout(() => { setIsError(false) }, HIDE_ERR_TIME))
+    setIsError(true)
+  }
+
+  useEffect(() => {
+    saveCityToStorage()
+  }, [city.country, city.countryCode, city.name])
 
   useEffect(() => {
     async function fetchMyApp() {
@@ -70,7 +87,12 @@ function App() {
     <div className="App">
       <div>Ваш город "{city.name}, {city.country}"</div>
       <div>Температура сегодня: {tempMin} - {tempMax} °C</div>
-      <button onClick="showCityPopup">Выбрать другой город {city.country}</button>
+      <button onClick={getWeather}>Выбрать другой город {city.country}</button>
+      {isError === true &&
+        <ErrorNotice>
+          Что-то пошло не так, попробуйте повторить позже.
+        </ErrorNotice>
+      }
     </div>
   );
 }
